@@ -80,9 +80,17 @@ fun main() {
                 txn.dsl().update(tbl).set(notes, "testing3").where(id.eq(allegianceId)).returning(fields).fetchOne()
             }.let { r ->
                 if (r == null) {
-                    error("No result from RETURNING :(")
+                    println("No result from RETURNING :(")
                 } else {
                     println(r.intoMap())
+                }
+            }
+            // But did the update go through?
+            ctx.select(notes).from(tbl).where(id.eq(allegianceId)).fetchOne()!!.map { r ->
+                if (r.get(notes) != "testing3") {
+                    println("Update didn't make it...")
+                } else {
+                    println("Update made it... :S")
                 }
             }
         }
